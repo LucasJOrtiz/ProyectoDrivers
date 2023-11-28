@@ -31,8 +31,8 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 const { Driver, Team } = sequelize.models;
 
-Driver.belongsToMany(Team, { through: 'DriverTeam', timestamps: false});
-Team.belongsToMany(Driver, { through: 'DriverTeam', timestamps: false});
+Driver.belongsToMany(Team, { through: 'DriverTeam'});
+Team.belongsToMany(Driver, { through: 'DriverTeam'});
 
 module.exports = {
   ...sequelize.models, 
