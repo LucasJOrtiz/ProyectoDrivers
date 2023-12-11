@@ -1,22 +1,51 @@
-const {createDriverDB} = require ("../controllers/driverControllers");
+const {
+    createDriverDB, 
+    getDriverById, 
+    getDriverByName, 
+    getAllDrivers
+} = require ("../controllers/driverControllers");
 
-const getDriverHandler = (req,res) =>{
+const getDriverHandler = async (req,res) =>{
     const {name} = req.query;
-    if (name) res.status(200).send (`Here you got the driver named: ${name}`);
-    res.status(200).send(`Here you got all the drivers`)
+    try {
+        if (name){
+            const nameDriver = await getDriverByName(name)
+            res.status(200).json({
+                msg: `Here you got the driver named: ${name}`,
+                data: nameDriver
+            });
+        } else{
+            const driversNames = await getAllDrivers()
+            res.status(200).json({
+                msg: `Here you got all the drivers`,
+                data: driversNames
+            });
+        }  
+    } catch (error) {
+        res.status(500).json({error:error.message});
+    }
 };
 
-const getDetailHandler = (req,res) =>{
+const getDetailHandler = async (req,res) =>{
     const {id} = req.params;
-    res.status(200).send(`Here you got the detail from driver's id: ${id}`)
+    const source = isNaN(id) ? "bdd" : "api";
+    try {
+        const detailDriver = await getDriverById(id,source)
+        res.status(200).json({
+            msg: `Here you got the detail from the driver's id: ${id}`,
+            data: detailDriver
+        });
+    } catch (error) {
+        res.status(500).json({error:error.message});
+    }
 };
 
 const createDriverHandler = async (req,res) =>{
-    const {firstName, lastName, description, image, nationality, birthDate} = req.body;
+    const {name, description, image, nationality, dob} = req.body;
     try{
-        const newDriver = await createDriverDB (firstName, lastName, description, image, nationality, birthDate);
+        const newDriver = await createDriverDB (name, description, image, nationality, dob);
         res.status(200).json({
-            msg: `${firstName} was created as a new driver`,
+            msg: `${name} was created as a new driver`,
             data: newDriver
         });
     } catch (error){

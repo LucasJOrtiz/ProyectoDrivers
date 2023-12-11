@@ -10,16 +10,21 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique:true,
     },
-    firstName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    lastName: {
+    // firstName: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
+    // lastName: {
+    //   type: DataTypes.STRING,
+    // },
+    image: {
       type: DataTypes.STRING,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      length: [10, 200],
+      allowNull: false,
+      defaultValue: '/path/to/default.png' 
     },
     // image: {
     //   type: DataTypes.STRING,
@@ -29,17 +34,20 @@ module.exports = (sequelize) => {
     //     description: 'We are updating our database, come back later to see the image' 
     //   },
     // },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '/path/to/default.png' 
+    dob: {
+      type: DataTypes.DATEONLY,
     },
     nationality: {
       type: DataTypes.STRING,
     },
-    birthDate: {
-      type: DataTypes.DATEONLY,
+    description: {
+      type: DataTypes.TEXT,
+      length: [10, 200],
     },
+    created: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   },
 
   {
