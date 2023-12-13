@@ -2,7 +2,8 @@ const {
     createDriverDB, 
     getDriverById, 
     getDriverByName, 
-    getAllDrivers
+    getAllDrivers,
+    getTeam
 } = require ("../controllers/driverControllers");
 
 const getDriverHandler = async (req,res) =>{
@@ -105,9 +106,32 @@ const getNameHandler = async (req, res) => {
     console.log('Search for drivers by name completed...');
 };
 
+const getTeamsHandler = async (req, res) => {
+    console.log('Fetching teams...');
+    try {
+        await getTeam();
+        const teams = await Team.findAll();
+        if (teams.length > 0) {
+            res.status(200).json({
+            msg: 'Teams founded',
+            data: teams,
+          });
+        } else {
+            res.status(404).json({
+              msg: 'No teams found',
+              data: [],
+            });
+          }
+        } catch (error) {
+          console.error('Error while fetching teams:', error);
+          res.status(500).json({ error: 'Failed to fetch or save teams' });
+        }
+      };
+
 module.exports={
     getDriverHandler,
     getDetailHandler,
     createDriverHandler,
-    getNameHandler
+    getNameHandler,
+    getTeamsHandler
 }

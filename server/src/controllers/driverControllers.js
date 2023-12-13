@@ -1,5 +1,7 @@
 const {Driver, Team} = require ("../db");
 const axios = require ("axios");
+const fs = require('fs');
+const path = require('path');
 
 //--------------------------------------------------------------------
 const infoCleaner = (array)=> {
@@ -69,10 +71,29 @@ const getDriverByName = async (name)=>{
         return limitedDrivers;
 }
 
+const getTeam = async () => {
+    const dbPath = path.join(__dirname, 'server\api\db.json'); 
+        if (fs.existsSync(dbPath)) {
+            const jsonData = fs.readFileSync(dbPath, 'utf-8');
+            const data = JSON.parse(jsonData);
+            if (data.teams && data.teams.length > 0) {
+                const savedTeams = data.teams;
+                const dbTeams = await Team.findAll();
+                if (dbTeams.length === 0) {
+                    savedTeams.forEach(async (team) => {
+                        await Team.create({
+                            name: team.name,
+                        });
+                    });
+                  }
+                }
+              }
+            }
 
 module.exports={
     createDriverDB,
     getDriverById,
     getDriverByName,
-    getAllDrivers
+    getAllDrivers,
+    getTeam
 };
