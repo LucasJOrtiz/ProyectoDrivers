@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+const { defaultImagePath } = require('../utils');
 
 module.exports = (sequelize) => {
 
@@ -10,40 +11,56 @@ module.exports = (sequelize) => {
       allowNull: false,
       unique:true,
     },
-    name: {
+
+    forename: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // firstName: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    // },
-    // lastName: {
-    //   type: DataTypes.STRING,
-    // },
+
+    surname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    name: {
+      type: DataTypes.VIRTUAL,
+      allowNull: false,
+      get() {
+        const forename = this.getDataValue('forename');
+        const surname = this.getDataValue('surname');
+        return `${forename} ${surname}`;
+      },
+      set(value) {
+        const parts = value.split(' ');
+        this.setDataValue('forename', parts[0]);
+        this.setDataValue('surname', parts[1]);
+      },
+    },
+
     image: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: '/path/to/default.png' 
+      defaultValue: defaultImagePath
     },
-    // image: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    //   defaultValue: {
-    //     img: 'cr-pi-drivers-main\client\public\images\default.png',  
-    //     description: 'We are updating our database, come back later to see the image' 
-    //   },
-    // },
+
     dob: {
       type: DataTypes.DATEONLY,
     },
+
     nationality: {
       type: DataTypes.STRING,
     },
+
     description: {
       type: DataTypes.TEXT,
-      length: [10, 200],
+      validate: {
+        len: {
+          args: [10, 200],
+          msg: 'Description length must be between 10 and 200 characters.',
+        },
+      },
     },
+    
     created: {
       type: DataTypes.BOOLEAN,
       defaultValue: true

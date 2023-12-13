@@ -7,8 +7,9 @@ getRoutes.get ("/drivers", getDriverHandler);
 
 getRoutes.get ("/drivers/:idDriver", getDetailHandler);
 
-getRoutes.get ("/drivers?name=", (req,res)=>{
-    res.status(200).send("Here you got related drivers")
+getRoutes.get ("/drivers/name", (req,res)=>{
+    const { name } = req.query;
+    res.status(200).send(`Here you got related drivers named: ${name}`)
 });
 
 getRoutes.get ("/teams", (req,res)=>{

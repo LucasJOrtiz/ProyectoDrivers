@@ -6,24 +6,43 @@ const {
 } = require ("../controllers/driverControllers");
 
 const getDriverHandler = async (req,res) =>{
+    console.log('Searching drivers...');
     const {name} = req.query;
     try {
+        let drivers;
         if (name){
-            const nameDriver = await getDriverByName(name)
-            res.status(200).json({
-                msg: `Here you got the driver named: ${name}`,
-                data: nameDriver
-            });
+            drivers = await getDriverByName(name)
+            // const nameDriver = await getDriverByName(name)
+            // res.status(200).json({
+            //     msg: `Here you got the driver named: ${name}`,
+            //     data: nameDriver
+            // });
         } else{
-            const driversNames = await getAllDrivers()
-            res.status(200).json({
-                msg: `Here you got all the drivers`,
-                data: driversNames
-            });
+            drivers = await getAllDrivers()
+            // const driversNames = await getAllDrivers()
+            // res.status(200).json({
+            //     msg: `Here you got all the drivers`,
+            //     data: driversNames
+            // });
         }  
+
+        const simplified = drivers.map(driver => {
+            return {
+              name: driver.name, 
+              image: driver.image
+            }
+          });
+      
+          res.status(200).json({
+            msg: 'Founded drivers',
+            data: simplified   
+          });
+
     } catch (error) {
+        console.error('Error while fetching drivers:', error);
         res.status(500).json({error:error.message});
     }
+    console.log('Finding driver and returned...');
 };
 
 const getDetailHandler = async (req,res) =>{
@@ -36,11 +55,13 @@ const getDetailHandler = async (req,res) =>{
             data: detailDriver
         });
     } catch (error) {
+        console.error('Error while fetching driver details:', error);
         res.status(500).json({error:error.message});
     }
 };
 
 const createDriverHandler = async (req,res) =>{
+    console.log('Request for driver creation');
     const {name, description, image, nationality, dob} = req.body;
     try{
         const newDriver = await createDriverDB (name, description, image, nationality, dob);
@@ -49,8 +70,10 @@ const createDriverHandler = async (req,res) =>{
             data: newDriver
         });
     } catch (error){
+        console.error('Error while creating driver:', error);
         res.status(500).json({error:error.message});
     }
+    console.log('Driver created successfully');
 };
 
 module.exports={
