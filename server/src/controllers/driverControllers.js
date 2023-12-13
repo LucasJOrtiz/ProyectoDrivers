@@ -51,14 +51,22 @@ const getAllDrivers = async ()=>{
 
 const getDriverByName = async (name)=>{
     const DBdrivers = await Driver.findAll({
-        where: {name: name},
-        include: Team
+        where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name)),
+        include: Team,
+        limit: 15
     });
     const APIinfo = (await axios.get ("cr-pi-drivers-main\server\api\db.json")).data;
-    const APIdrivers = infoCleaner (APIinfo);
-    const driverFilter = APIdrivers.filter (driverArr=> drivers.name=== name);
+    const APIdrivers = infoCleaner (APIinfo).slice(0, 15);
+    
+    const combinedDrivers = [...DBdrivers, ...APIdrivers]
+    const uniqueDrivers = combinedDrivers.filter((driver, index, self) =>
+            index === self.findIndex((d) => (
+                d.id === driver.id
+                ))
+        );
 
-    return [...DBdrivers, ...driverFilter]
+        const limitedDrivers = uniqueDrivers.slice(0, 15);
+        return limitedDrivers;
 }
 
 

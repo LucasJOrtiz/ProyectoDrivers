@@ -76,8 +76,38 @@ const createDriverHandler = async (req,res) =>{
     console.log('Driver created successfully');
 };
 
+const getNameHandler = async (req, res) => {
+    console.log('Searching drivers by name...');
+    const { name } = req.query;
+    try {
+        const drivers = await getDriverByName(name);
+
+        const simplified = drivers.map(driver => ({
+            name: driver.name,
+            image: driver.image
+        }));
+
+        if (drivers.length === 0) {
+            res.status(404).json({
+                msg: `We didn't found the driver named: ${name}`,
+                data: [] 
+            });
+        } else {
+            res.status(200).json({
+                msg: `Drivers found with name: ${name}`,
+                data: simplified
+        });
+    }
+    } catch (error) {
+        console.error('Error while fetching drivers by name:', error);
+        res.status(500).json({ error: error.message });
+    }
+    console.log('Search for drivers by name completed...');
+};
+
 module.exports={
     getDriverHandler,
     getDetailHandler,
-    createDriverHandler
+    createDriverHandler,
+    getNameHandler
 }
