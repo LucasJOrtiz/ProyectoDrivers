@@ -13,18 +13,8 @@ const getDriverHandler = async (req,res) =>{
         let drivers;
         if (name){
             drivers = await getDriverByName(name)
-            // const nameDriver = await getDriverByName(name)
-            // res.status(200).json({
-            //     msg: `Here you got the driver named: ${name}`,
-            //     data: nameDriver
-            // });
         } else{
             drivers = await getAllDrivers()
-            // const driversNames = await getAllDrivers()
-            // res.status(200).json({
-            //     msg: `Here you got all the drivers`,
-            //     data: driversNames
-            // });
         }  
 
         const simplified = drivers.map(driver => {
@@ -63,11 +53,11 @@ const getDetailHandler = async (req,res) =>{
 
 const createDriverHandler = async (req,res) =>{
     console.log('Request for driver creation');
-    const {name, description, image, nationality, dob} = req.body;
+    const {forename, surname, description, image, nationality, dob} = req.body;
     try{
-        const newDriver = await createDriverDB (name, description, image, nationality, dob);
+        const newDriver = await createDriverDB (forename, surname, description, image, nationality, dob);
         res.status(200).json({
-            msg: `${name} was created as a new driver`,
+            msg: `${forename} ${surname} was created as a new driver`,
             data: newDriver
         });
     } catch (error){
@@ -79,23 +69,24 @@ const createDriverHandler = async (req,res) =>{
 
 const getNameHandler = async (req, res) => {
     console.log('Searching drivers by name...');
-    const { name } = req.query;
+    const { forename } = req.query;
     try {
-        const drivers = await getDriverByName(name);
+        const drivers = await getDriverByName(forename);
 
         const simplified = drivers.map(driver => ({
-            name: driver.name,
+            name: driver.forename,
+            lastname: driver.surname,
             image: driver.image
         }));
 
         if (drivers.length === 0) {
             res.status(404).json({
-                msg: `We didn't found the driver named: ${name}`,
+                msg: `We didn't found the driver named: ${forename}`,
                 data: [] 
             });
         } else {
             res.status(200).json({
-                msg: `Drivers found with name: ${name}`,
+                msg: `Drivers found with name: ${forename}`,
                 data: simplified
         });
     }

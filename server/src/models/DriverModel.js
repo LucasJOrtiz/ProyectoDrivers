@@ -22,25 +22,15 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
 
-    name: {
-      type: DataTypes.VIRTUAL,
-      allowNull: false,
-      get() {
-        const forename = this.getDataValue('forename');
-        const surname = this.getDataValue('surname');
-        return `${forename} ${surname}`;
-      },
-      set(value) {
-        const parts = value.split(' ');
-        this.setDataValue('forename', parts[0]);
-        this.setDataValue('surname', parts[1]);
-      },
-    },
-
     image: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: defaultImagePath
+      set(value) {
+        if (value==="") {
+          this.setDataValue('image', "https://drive.google.com/file/d/1quRhU8FwVxVV7qWMy6JWdQOpY6ls8AeC/view?usp=sharing")
+        } else {
+          this.setDataValue('image', (value))};
+      },
     },
 
     dob: {

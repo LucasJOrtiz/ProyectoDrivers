@@ -2,6 +2,7 @@ const {Driver, Team} = require ("../db");
 const axios = require ("axios");
 const fs = require('fs');
 const path = require('path');
+const sequelize = require ('sequelize')
 
 //--------------------------------------------------------------------
 const infoCleaner = (array)=> {
@@ -26,9 +27,9 @@ const getDetailData = (driver) => {
   }
 //--------------------------------------------------------------------
 
-const createDriverDB = async (name, description, image, nationality, dob)=>{
+const createDriverDB = async (forename, surname, description, image, nationality, dob)=>{
     console.log('Creating driver on DB...');
-    const driverCreated = await Driver.create ({name, description, image, nationality, dob});
+    const driverCreated = await Driver.create ({forename, surname, description, image, nationality, dob});
     console.log('Created driver: ', driverCreated);
     return driverCreated;
 };
@@ -36,7 +37,7 @@ const createDriverDB = async (name, description, image, nationality, dob)=>{
 const getDriverById = async (id, source) =>{
     console.log(`Looking for driver ID ${id} on ${source}`);
     const driverFromId = source === "api" ?
-    (await axios.get (`cr-pi-drivers-main\server\api\db.json/${id}`)).data :
+    (await axios.get (`http://localhost:5000/drivers/:{id}`)).data :
     await Driver.findByPk(id, {include: Team});
     console.log('Founded driver: ', driverFromId);
     
@@ -45,19 +46,19 @@ const getDriverById = async (id, source) =>{
 
 const getAllDrivers = async ()=>{
     const driversDB = await Driver.findAll()
-    const infoAPI = (await axios.get ("cr-pi-drivers-main\server\api\db.json")).data;
+    const infoAPI = (await axios.get ("http://localhost:5000/drivers")).data;
     const driversAPI = infoCleaner (infoAPI);
 
     return [...driversDB, ...driversAPI]
 }
 
-const getDriverByName = async (name)=>{
+const getDriverByName = async (forename)=>{
     const DBdrivers = await Driver.findAll({
-        where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name)),
+        where: sequelize.where(sequelize.fn('lower', sequelize.col('forename')), sequelize.fn('lower', forename)),
         include: Team,
         limit: 15
     });
-    const APIinfo = (await axios.get ("cr-pi-drivers-main\server\api\db.json")).data;
+    const APIinfo = (await axios.get (`http://localhost:5000/drivers?name.forename=${forename}`)).data;
     const APIdrivers = infoCleaner (APIinfo).slice(0, 15);
     
     const combinedDrivers = [...DBdrivers, ...APIdrivers]
@@ -71,8 +72,9 @@ const getDriverByName = async (name)=>{
         return limitedDrivers;
 }
 
+//ARREGLAR
 const getTeam = async () => {
-    const dbPath = path.join(__dirname, 'server\api\db.json'); 
+    const dbPath = path.join(__dirname, 'http://localhost:5000/drivers'); 
         if (fs.existsSync(dbPath)) {
             const jsonData = fs.readFileSync(dbPath, 'utf-8');
             const data = JSON.parse(jsonData);

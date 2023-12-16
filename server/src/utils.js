@@ -1,7 +1,7 @@
-const path = require('path');
+// const path = require('path');
 
-const defaultImagePath = path.join('cr-pi-drivers-main', 'client', 'public', 'images', 'default.png');
+// const defaultImagePath = path.join('cr-pi-drivers-main', 'client', 'public', 'images', 'default.png');
 
-module.exports = {
-    defaultImagePath
-  };
+// module.exports = {
+//     defaultImagePath
+//   };

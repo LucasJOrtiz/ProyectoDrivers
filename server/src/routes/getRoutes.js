@@ -10,9 +10,9 @@ const {
 
 getRoutes.get ("/drivers", getDriverHandler);
 
-getRoutes.get ("/drivers/:idDriver", getDetailHandler);
-
 getRoutes.get ("/drivers/name", getNameHandler);
+
+getRoutes.get ("/drivers/:idDriver", getDetailHandler);
 
 getRoutes.get ("/teams", getTeamsHandler);
 

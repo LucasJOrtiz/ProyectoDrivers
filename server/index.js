@@ -2,15 +2,18 @@ require('dotenv').config();
 const axios = require("axios");
 const server = require("./src/server");
 const { conn } = require('./src/db.js');
-const PORT = process.env.PORT || 5000;
-// const PORT = 5000;
+const PORT = process.env.PORT;
 
-conn.sync({ force: false }).then(() => {
-  console.log('Conected to data base');
+(async () => {
+  try {
+    await conn.sync({ force: false })
+  console.log('Connected to the database');
 
   server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
   });
-}).catch (error => {
-  console.error('Not conected to DB: ', error);
-});
+} catch (error) {
+  console.error('Error connecting to the database: ', error);
+  process.exit(1);
+}
+})();
