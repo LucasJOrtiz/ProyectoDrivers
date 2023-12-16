@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const sequelize = require ('sequelize')
 
-//--------------------------------------------------------------------
+//Filtros
 const infoCleaner = (array)=> {
     return array.map ((drivers)=>{
     return {
@@ -24,34 +24,18 @@ const getDetailData = (driver) => {
       nationality: driver.nationality,
       teams: driver.teams 
     } 
-  }
-//--------------------------------------------------------------------
-
-const createDriverDB = async (forename, surname, description, image, nationality, dob)=>{
-    console.log('Creating driver on DB...');
-    const driverCreated = await Driver.create ({forename, surname, description, image, nationality, dob});
-    console.log('Created driver: ', driverCreated);
-    return driverCreated;
-};
-
-const getDriverById = async (id, source) =>{
-    console.log(`Looking for driver ID ${id} on ${source}`);
-    const driverFromId = source === "api" ?
-    (await axios.get (`http://localhost:5000/drivers/:{id}`)).data :
-    await Driver.findByPk(id, {include: Team});
-    console.log('Founded driver: ', driverFromId);
-    
-    return getDetailData (driverFromId);
 }
 
+//Entrega todos los Drivers desde DB y API
 const getAllDrivers = async ()=>{
     const driversDB = await Driver.findAll()
     const infoAPI = (await axios.get ("http://localhost:5000/drivers")).data;
     const driversAPI = infoCleaner (infoAPI);
-
+    
     return [...driversDB, ...driversAPI]
 }
 
+//Busca Driver en DB y API según primer nombre
 const getDriverByName = async (forename)=>{
     const DBdrivers = await Driver.findAll({
         where: sequelize.where(sequelize.fn('lower', sequelize.col('forename')), sequelize.fn('lower', forename)),
@@ -71,6 +55,25 @@ const getDriverByName = async (forename)=>{
         const limitedDrivers = uniqueDrivers.slice(0, 15);
         return limitedDrivers;
 }
+
+//Busca Driver en DB y API según ID
+const getDriverById = async (id, source) =>{
+    console.log(`Looking for driver ID ${id} on ${source}`);
+    const driverFromId = source === "api" ?
+    (await axios.get (`http://localhost:5000/drivers/:{id}`)).data :
+    await Driver.findByPk(id, {include: Team});
+    console.log('Founded driver: ', driverFromId);
+    
+    return getDetailData (driverFromId);
+}
+
+//Creación de Driver en DB
+const createDriverDB = async (forename, surname, description, image, nationality, dob)=>{
+    console.log('Creating driver on DB...');
+    const driverCreated = await Driver.create ({forename, surname, description, image, nationality, dob});
+    console.log('Created driver: ', driverCreated);
+    return driverCreated;
+};
 
 //ARREGLAR
 const getTeam = async () => {
@@ -93,9 +96,9 @@ const getTeam = async () => {
             }
 
 module.exports={
-    createDriverDB,
-    getDriverById,
-    getDriverByName,
     getAllDrivers,
+    getDriverByName,
+    getDriverById,
+    createDriverDB,
     getTeam
 };

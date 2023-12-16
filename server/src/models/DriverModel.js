@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize');
-const { defaultImagePath } = require('../utils');
 
 module.exports = (sequelize) => {
 
