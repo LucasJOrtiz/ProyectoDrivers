@@ -1,28 +1,25 @@
 const {
     getAllDrivers,
-    getDriverByName, 
     getDriverById, 
+    getDriverByName, 
     createDriverDB, 
     getTeam
 } = require ("../controllers/driverControllers");
 
-//Entrega todos los Drivers desde DB y API con manejo de errores
+//Entrega TODOS los drivers, filtra info y maneja errores
 const getDriversHandler = async (req,res) =>{
     console.log('Searching drivers...');
     const {name} = req.query;
     try {
-        let drivers;
-        if (name){
-            drivers = await getDriverByName(name)
-        } else{
-            drivers = await getAllDrivers()
-        }  
+        const drivers = await getAllDrivers()
 
         const simplified = drivers.map(driver => {
             return {
               name: driver.name, 
-              image: driver.image
-            }
+              lastname: driver.lastname,
+              image: driver.image,
+              teams: driver.teams,
+            };
           });
       
           res.status(200).json({
@@ -37,41 +34,10 @@ const getDriversHandler = async (req,res) =>{
     console.log('Finding drivers and returned...');
 };
 
-//Busca Driver en DB y API según primer nombre con manejo de errores
-const getNameHandler = async (req, res) => {
-    console.log('Searching drivers by name...');
-    const { forename } = req.query;
-    try {
-        const drivers = await getDriverByName(forename);
-
-        const simplified = drivers.map(driver => ({
-            name: driver.forename,
-            lastname: driver.surname,
-            image: driver.image
-        }));
-
-        if (drivers.length === 0) {
-            res.status(404).json({
-                msg: `We didn't found the driver named: ${forename}`,
-                data: [] 
-            });
-        } else {
-            res.status(200).json({
-                msg: `Drivers found with name: ${forename}`,
-                data: simplified
-        });
-    }
-    } catch (error) {
-        console.error('Error while fetching drivers by name:', error);
-        res.status(500).json({ error: error.message });
-    }
-    console.log('Search for drivers by name completed...');
-};
-
 //Busca Driver en DB y API según ID con manejo de errores
 const getIdHandler = async (req,res) =>{
     const {id} = req.params;
-    const source = isNaN(id) ? "bdd" : "api";
+    const source = isNaN(id) ? "db" : "api";
     try {
         const detailDriver = await getDriverById(id,source)
         res.status(200).json({
@@ -82,6 +48,32 @@ const getIdHandler = async (req,res) =>{
         console.error('Error while fetching driver details:', error);
         res.status(500).json({error:error.message});
     }
+};
+
+//Busca Driver en DB y API según primer nombre con manejo de errores
+const getNameHandler = async (req,res) =>{
+    console.log('Searching drivers...');
+    const {name} = req.query;
+    try {
+        let drivers;
+        if (name){
+            drivers = await getDriverByName(name)
+            res.status(200).json({
+              msg: 'Founded drivers',
+              drivers
+            });
+
+        } else{
+        res.status(404).json({
+            msg: `No drivers found with name: ${forename}`,
+            data: [] 
+        }) 
+      }
+     } catch (error) {
+        console.error('Error while fetching drivers:', error);
+        res.status(500).json({error:error.message});
+    }
+    console.log('Finding drivers and returned...');
 };
 
 //Creación de Driver en DB con manejo de errores
@@ -126,8 +118,8 @@ const getTeamsHandler = async (req, res) => {
 
 module.exports={
     getDriversHandler,
-    getNameHandler,
     getIdHandler,
+    getNameHandler,
     createDriverHandler,
     getTeamsHandler
 }

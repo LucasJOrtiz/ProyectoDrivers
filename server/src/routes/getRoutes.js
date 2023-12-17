@@ -3,16 +3,16 @@ const getRoutes = Router();
 
 const { 
     getDriversHandler, 
-    getNameHandler,
     getIdHandler,
+    getNameHandler,
     getTeamsHandler
  } = require ("../handlers/driverHandlers")
 
 getRoutes.get ("/drivers", getDriversHandler);
 
-getRoutes.get ("/drivers/name", getNameHandler);
+getRoutes.get ("/drivers/:id", getIdHandler);
 
-getRoutes.get ("/drivers/:idDriver", getIdHandler);
+getRoutes.get ("/name", getNameHandler);
 
 getRoutes.get ("/teams", getTeamsHandler);
 
