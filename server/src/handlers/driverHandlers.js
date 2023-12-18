@@ -6,25 +6,16 @@ const {
     getTeam
 } = require ("../controllers/driverControllers");
 
-//Entrega TODOS los drivers, filtra info y maneja errores
+//Entrega TODOS los drivers y maneja errores
 const getDriversHandler = async (req,res) =>{
     console.log('Searching drivers...');
-    const {name} = req.query;
+
     try {
         const drivers = await getAllDrivers()
-
-        const simplified = drivers.map(driver => {
-            return {
-              name: driver.name, 
-              lastname: driver.lastname,
-              image: driver.image,
-              teams: driver.teams,
-            };
-          });
-      
+        
           res.status(200).json({
             msg: 'Founded drivers',
-            data: simplified   
+            data: drivers   
           });
 
     } catch (error) {
@@ -34,14 +25,14 @@ const getDriversHandler = async (req,res) =>{
     console.log('Finding drivers and returned...');
 };
 
-//Busca Driver en DB y API según ID con manejo de errores
+//Busca Driver según ID y maneja de errores
 const getIdHandler = async (req,res) =>{
     const {id} = req.params;
     const source = isNaN(id) ? "db" : "api";
     try {
         const detailDriver = await getDriverById(id,source)
         res.status(200).json({
-            msg: `Here you got the detail from the driver's id: ${id}`,
+            msg: `Detail from the id: ${id}`,
             data: detailDriver
         });
     } catch (error) {

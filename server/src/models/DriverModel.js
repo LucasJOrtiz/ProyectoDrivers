@@ -42,12 +42,6 @@ module.exports = (sequelize) => {
 
     description: {
       type: DataTypes.TEXT,
-      validate: {
-        len: {
-          args: [10, 200],
-          msg: 'Description length must be between 10 and 200 characters.',
-        },
-      },
     },
 
     created: {

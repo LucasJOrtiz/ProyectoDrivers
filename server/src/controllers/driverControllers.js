@@ -3,59 +3,18 @@ const axios = require ("axios");
 const fs = require('fs');
 const path = require('path');
 const sequelize = require ('sequelize')
+const {
+    CommonStructureToAll,
+    StructureForID,
+    StructureForName,
+} = require ("./filters")
 
-//Filtros
-const infoCleanerAPI = (array)=> {
-    return array.map ((drivers)=>{
-    return {
-        name: drivers.name.forename,
-        lastname: drivers.name.surname,
-        image: drivers.image,
-        teams: drivers.teams,
-        description: drivers.description,
-        created: false,
-    }
-});
-};
-
-const infoCleanerDB = (array)=> {
-    return array.map ((driver)=>{
-    return {
-        name: driver.forename,
-        lastname: driver.surname,
-        image: driver.image,
-        teams: driver.teams,
-        description: driver.description,
-        created: true,
-    }
-});
-};
-
-const getDataAPI = (driver) => {
-    return {
-      id: driver.id,
-      name: driver.name,
-      nationality: driver.nationality,
-      teams: driver.teams 
-    } 
-}
-
-const getDataDB = (driver) => {
-    return {
-      id: driver.id,
-      name: driver.forename,
-      lastname: driver.surname,
-      nationality: driver.nationality,
-      teams: driver.teams 
-    } 
-}
-
-//Entrega todos los Drivers desde DB y API
+//Entrega todos los Drivers y estructura los datos
 const getAllDrivers = async ()=>{
     const infoDB = await Driver.findAll()
-    const driversDB = infoCleanerDB (infoDB);
+    const driversDB = CommonStructureToAll (infoDB);
     const infoAPI = (await axios.get ("http://localhost:5000/drivers")).data;
-    const driversAPI = infoCleanerAPI (infoAPI);
+    const driversAPI = CommonStructureToAll (infoAPI);
     
     return [...driversDB, ...driversAPI]
 }
@@ -73,7 +32,7 @@ const getDriverById = async (id, source) =>{
   }
 
     console.log('Founded driver: ', driverFromId);
-    return source === 'api' ? getDataAPI (driverFromId) : getDataDB (driverFromId.toJSON());
+    return StructureForID(source === 'api' ? driverFromId : driverFromId?.toJSON());
 }
 
 //Busca Driver en DB y API según primer nombre
@@ -84,16 +43,15 @@ const getDriverByName = async (forename)=>{
     });
     
     const capsQuery = (forename.charAt(0).toUpperCase() + forename.slice(1).toLowerCase());
-    const APIinfo = (await axios.get (`http://localhost:5000/drivers?name.forename=${capsQuery}`)).data;
-    const APIdrivers = infoCleanerAPI (APIinfo)
+    const APIdrivers = (await axios.get (`http://localhost:5000/drivers?name.forename=${capsQuery}`)).data;
     
     const combinedDrivers = [...DBdrivers, ...APIdrivers]
     const uniqueDrivers = combinedDrivers.filter((driver, index, self) =>
-            index === self.findIndex((d) => (d.id === driver.id))
-        );
+            index === self.findIndex((d) => (d.id === driver.id)));
+    const limitedDrivers = uniqueDrivers.slice(0, 15);
+    const formattedDrivers = StructureForName(limitedDrivers);
 
-        const limitedDrivers = uniqueDrivers.slice(0, 15);
-        return limitedDrivers;
+    return formattedDrivers;
 }
 
 //Creación de Driver en DB
