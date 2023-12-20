@@ -1,9 +1,11 @@
+const { Team } = require("../db");
 const {
-    getAllDrivers,
-    getDriverById, 
-    getDriverByName, 
+    AllDrivers,
+    DriverById, 
+    DriverByName, 
     createDriverDB, 
-    getTeam
+    AllTeamsFromAPI,
+    saveTeamsToDatabase
 } = require ("../controllers/driverControllers");
 
 //Entrega TODOS los drivers y maneja errores
@@ -11,7 +13,7 @@ const getDriversHandler = async (req,res) =>{
     console.log('Searching drivers...');
 
     try {
-        const drivers = await getAllDrivers()
+        const drivers = await AllDrivers()
         
           res.status(200).json({
             msg: 'Founded drivers',
@@ -30,7 +32,7 @@ const getIdHandler = async (req,res) =>{
     const {id} = req.params;
     const source = isNaN(id) ? "db" : "api";
     try {
-        const detailDriver = await getDriverById(id,source)
+        const detailDriver = await DriverById(id,source)
         res.status(200).json({
             msg: `Detail from the id: ${id}`,
             data: detailDriver
@@ -48,7 +50,7 @@ const getNameHandler = async (req,res) =>{
     try {
         let drivers;
         if (name){
-            drivers = await getDriverByName(name)
+            drivers = await DriverByName(name)
             res.status(200).json({
               msg: 'Founded drivers',
               drivers
@@ -86,26 +88,21 @@ const createDriverHandler = async (req,res) =>{
 
 //ARREGLAR
 const getTeamsHandler = async (req, res) => {
-    console.log('Fetching teams...');
-    try {
-        await getTeam();
-        const teams = await Team.findAll();
-        if (teams.length > 0) {
-            res.status(200).json({
-            msg: 'Teams founded',
-            data: teams,
-          });
-        } else {
-            res.status(404).json({
-              msg: 'No teams found',
-              data: [],
-            });
-          }
-        } catch (error) {
-          console.error('Error while fetching teams:', error);
-          res.status(500).json({ error: 'Failed to fetch or save teams' });
-        }
-      };
+  try {
+    const teamsFromAPI = await AllTeamsFromAPI();
+
+    await saveTeamsToDatabase(teamsFromAPI);
+
+    res.status(200).json({
+      msg: 'Teams fetched from API and saved to database',
+      data: teamsFromAPI,
+    });
+  } catch (error) {
+    console.error('Error while fetching or saving teams:', error);
+    res.status(500).json({ error: 'Failed to fetch or save teams' });
+  }
+};
+
 
 module.exports={
     getDriversHandler,
