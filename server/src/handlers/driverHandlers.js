@@ -1,4 +1,3 @@
-const { Team } = require("../db");
 const {
     AllDrivers,
     DriverById, 
@@ -72,9 +71,9 @@ const getNameHandler = async (req,res) =>{
 //Creación de Driver en DB con manejo de errores
 const createDriverHandler = async (req,res) =>{
     console.log('Request for driver creation');
-    const {forename, surname, description, image, nationality, dob} = req.body;
+    const {forename, surname, description, image, nationality, dob, teams} = req.body;
     try{
-        const newDriver = await createDriverDB (forename, surname, description, image, nationality, dob);
+        const newDriver = await createDriverDB (forename, surname, description, image, nationality, dob, teams);
         res.status(200).json({
             msg: `${forename} ${surname} was created as a new driver`,
             data: newDriver
@@ -86,7 +85,7 @@ const createDriverHandler = async (req,res) =>{
     console.log('Driver created successfully');
 };
 
-//ARREGLAR
+//Creación de Teams en DB con manejo de errores
 const getTeamsHandler = async (req, res) => {
   try {
     const teamsFromAPI = await AllTeamsFromAPI();
@@ -102,7 +101,6 @@ const getTeamsHandler = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch or save teams' });
   }
 };
-
 
 module.exports={
     getDriversHandler,

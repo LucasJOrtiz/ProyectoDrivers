@@ -54,12 +54,61 @@ const DriverByName = async (forename)=>{
     return formattedDrivers;
 }
 
-//Creación de Driver en DB
-const createDriverDB = async (forename, surname, description, image, nationality, dob)=>{
+//Relación Driver-Team y Creación de Driver en DB
+const createDriverDB = async (forename, surname, description, image, nationality, dob, teams)=>{
     console.log('Creating driver on DB...');
+
+    const existingDriver = await Driver.findOne({ where: { forename, surname } });
+    if (existingDriver) {
+        throw new Error('This driver already exists');
+    }
+
     const driverCreated = await Driver.create ({forename, surname, description, image, nationality, dob});
-    console.log('Created driver: ', driverCreated);
-    return driverCreated;
+
+    const formatTeamName = (name) => {
+      return name.toLowerCase().split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+
+  if (!teams) {
+    console.log('No teams provided for the driver');
+} else if (typeof teams === 'string') {
+    const teamNames = teams.split(',').map(team => team.trim());
+    const teamIds = [];
+
+    for (const teamName of teamNames) {
+        const formattedTeamName = formatTeamName(teamName);
+        const team = await Team.findOne({ where: { name: formattedTeamName } });
+        if (team) {
+            teamIds.push(team.id);
+        } else {
+            throw new Error(`The team "${teamName}" does not exist in the database`);
+        }
+    }
+
+    await driverCreated.setTeams(teamIds);
+} else {
+    throw new Error('The value of teams is not valid');
+}
+
+const driverTeams = await driverCreated.getTeams();
+
+    const driverData = {
+        id: driverCreated.id,
+        created: true,
+        forename: driverCreated.forename,
+        surname: driverCreated.surname,
+        description: driverCreated.description,
+        image: driverCreated.image,
+        nationality: driverCreated.nationality,
+        dob: driverCreated.dob,
+        teams: driverTeams.map(team => ({
+            id: team.id,
+            name: team.name
+        }))
+    };
+
+    console.log(`Created driver: ${driverData.forename} ${driverData.surname}`);
+    return { data: driverData };
 };
 
 //Ubicación, mapeo y formateo de teams
@@ -108,6 +157,7 @@ const saveTeamsToDatabase = async (teams) => {
     const existingTeamNames = existingTeams.map(team => team.name.toLowerCase());
     const newTeamNames = teams.map(name => name.toLowerCase());
     const missingTeams = newTeamNames.filter(name => !existingTeamNames.includes(name));
+    missingTeams.sort();
 
     if (missingTeams.length > 0) {
       await Team.bulkCreate(missingTeams.map(name => ({ name: name.charAt(0).toUpperCase() + name.slice(1) })));
