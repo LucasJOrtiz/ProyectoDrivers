@@ -1,34 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
+
+import HomePage from '../src/Pages/HomePage/HomePage'
+import DetailPage from '../src/Pages/DetailPage/DetailPage'
+import FormPage from '../src/Pages/FormPage/FormPage'
+import LandingPage from '../src/Pages/LandingPage/LandingPage'
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
+    <BrowserRouter>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <h1>PI Drivers</h1>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <Routes>
+        <Route exact path= "/home" element={<HomePage/>}/>
+        <Route path= "/home/:id" element={<DetailPage/>}/>
+        <Route path= "/form" element={<FormPage/>}/>
+        <Route path= "/landing" element={<LandingPage/>}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
