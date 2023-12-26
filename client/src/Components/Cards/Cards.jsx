@@ -8,24 +8,12 @@ import './Cards.css'
 function Cards() {
   const allDrivers = useSelector((state) => state.allMyDrivers);
 
-const [randomDriverIndices, setRandomDriverIndices] = useState([]);
-
-useEffect(() => {
-  const getRandomIndices = () => {
-    const indices = [];
-    while (indices.length < 9) {
-      const randomIndex = Math.floor(Math.random() * allDrivers.length);
-      if (!indices.includes(randomIndex)) {
-        indices.push(randomIndex);
-      }
-    }
-    return indices;
+  const getRandomDrivers = (drivers, count) => {
+    const shuffledDrivers = [...drivers].sort(() => 0.5 - Math.random());
+    return shuffledDrivers.slice(0, count);
   };
 
-  setRandomDriverIndices(getRandomIndices());
-}, [allDrivers]);
-
-const randomDrivers = randomDriverIndices.map((index) => allDrivers[index]);
+  const randomDrivers = getRandomDrivers(allDrivers, 9);
 
   return (
     <div className='cards'>
@@ -37,22 +25,3 @@ const randomDrivers = randomDriverIndices.map((index) => allDrivers[index]);
 }
 
 export default Cards
-
-// function Cards() {
-
-//   return (
-//     <div className='cards'>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//         <Card/>
-//       </div>
-//   )
-// }
-
-// export default Cards

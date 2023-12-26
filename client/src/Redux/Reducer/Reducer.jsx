@@ -7,7 +7,7 @@ function rootReducer(state= initialState, action){
         case GET_DRIVERS:
             return{
                 ...state,
-                allMyDrivers:action.payload,
+                allMyDrivers:[...action.payload],
             }
         default:
             return state

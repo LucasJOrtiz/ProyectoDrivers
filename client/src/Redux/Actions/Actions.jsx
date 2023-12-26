@@ -7,7 +7,7 @@ export function getDrivers(){
         const response = await axios ("http://localhost:5000/drivers");
         return dispatch({
             type: "GET_DRIVERS",
-            payload: response.data,
+            payload: [...response.data],
         })
     }
 }
