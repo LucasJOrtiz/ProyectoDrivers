@@ -1,8 +1,9 @@
-const {Driver, Team} = require ("../db");
 const axios = require ("axios");
 const fs = require('fs');
 const path = require('path');
 const sequelize = require ('sequelize')
+
+const {Driver, Team} = require ("../db");
 const {
     CommonStructureToAll,
     StructureForID,
