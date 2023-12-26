@@ -1,16 +1,3 @@
-// import './FormPage.css'
-
-// function FormPage() {
-
-//   return (
-//       <div>
-//         <h1>Crea un nuevo Piloto</h1>
-//       </div>
-//   )
-// }
-
-// export default FormPage
-
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createDriver } from '../../Redux/Actions/Actions';

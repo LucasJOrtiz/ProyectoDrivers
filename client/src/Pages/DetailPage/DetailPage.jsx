@@ -1,16 +1,3 @@
-// import './DetailPage.css'
-
-// function DetailPage() {
-
-//   return (
-//       <div>
-//         <h1>Detalles del Piloto</h1>
-//       </div>
-//   )
-// }
-
-// export default DetailPage
-
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
