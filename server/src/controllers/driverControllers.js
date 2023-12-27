@@ -15,7 +15,12 @@ const AllDrivers = async ()=>{
     const infoDB = await Driver.findAll()
     const driversDB = CommonStructureToAll (infoDB);
     const infoAPI = (await axios.get ("http://localhost:5000/drivers")).data;
-    const driversAPI = CommonStructureToAll (infoAPI);
+    const driversAPI = CommonStructureToAll (infoAPI).map(driver => {
+      if (driver.teams) {
+        driver.teams = driver.teams.split(',').join(', ');
+      }
+      return driver;
+  });
     
     return [...driversDB, ...driversAPI]
 }

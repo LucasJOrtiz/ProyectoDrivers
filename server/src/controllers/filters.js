@@ -27,6 +27,7 @@ const StructureForID = (driver) => {
 const StructureForName = (drivers) => {
     return drivers.map(driver => {
         return {
+            ID: driver.id || null,
             Name: driver.forename || driver.name.forename || null,
             Lastname: driver.surname || driver.name.surname || null,
             Description: driver.description || null,
