@@ -11,6 +11,42 @@
   transform: translateZ();
   transition: transform 0.25s ease-out;
   transition: filter 300ms;
+  width: 200px; 
+  height: auto;
+  position: relative;
+}
+
+.card img {
+  width: auto;
+  height: auto;
+  max-height: 200px;
+  border-radius: 5px;
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem; 
+  transition: transform 0.25s ease-out;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+.card p {
+  font-size: 0.9rem;
+  overflow:visible;
+  visibility: visible;
+  height: auto;
+  transition: transform 0.25s ease-out;
+}
+
+.card:hover h2 {
+  font-size: 2.5rem;
+}
+
+.card:hover p {
+  visibility: hidden;
+  padding: 0;
+  margin: 0;
 }
 
 .card:hover {

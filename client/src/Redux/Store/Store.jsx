@@ -7,6 +7,6 @@ export default function myStore(preloadedState) {
     preloadedState,
     devTools: process.env.NODE_ENV !== 'production',
   });
-
+  
   return store;
 }
