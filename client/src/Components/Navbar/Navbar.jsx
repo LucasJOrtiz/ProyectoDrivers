@@ -1,12 +1,24 @@
+import React from 'react';
 import './Navbar.css'
 
-function Navbar() {
+function Navbar({searchString, handleChange, handleSubmit}) {
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit();
+  };
 
   return (
       <div className='container'>
-        <form>
-          <input type="text" className='navbar' placeholder='Ingresa un Nombre'/>
-          <button className='button'>Buscar</button>
+        <form onSubmit={handleFormSubmit}>
+          <input
+          type="search"
+          className='navbar'
+          value={searchString}
+          onChange={handleChange}
+          placeholder='Enter the name' />
+          <button 
+          className='button'
+          type='submit'>Go!</button>
         </form>
       </div>
   )
