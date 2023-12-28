@@ -4,11 +4,21 @@ const path = require('path');
 const sequelize = require ('sequelize')
 
 const {Driver, Team} = require ("../db");
-const {
-    CommonStructureToAll,
-    StructureForID,
-    StructureForName,
-} = require ("./filters")
+const CommonStructureToAll = (drivers) => {
+  return drivers.map(driver => {
+      return {
+          id: driver.id || null,
+          forename: driver.forename || driver.name.forename || null,
+          surname: driver.surname || driver.name.surname || null,
+          teams: driver.teams || [],
+          dob: driver.dob || null,
+          nationality: driver.nationality || null,
+          description: driver.description || null,
+          image: driver.image?.url || driver.image || null,
+          created: driver.created !== undefined ? driver.created : false,
+      };
+  });
+};
 
 //Entrega todos los Drivers y estructura los datos
 const AllDrivers = async ()=>{
@@ -16,7 +26,7 @@ const AllDrivers = async ()=>{
     const driversDB = CommonStructureToAll (infoDB);
     const infoAPI = (await axios.get ("http://localhost:5000/drivers")).data;
     const driversAPI = CommonStructureToAll (infoAPI).map(driver => {
-      if (driver.teams) {
+      if (typeof driver.teams === 'string') {
         driver.teams = driver.teams.split(',').join(', ');
       }
       return driver;
@@ -38,7 +48,7 @@ const DriverById = async (id, source) =>{
   }
 
     console.log('Founded driver: ', driverFromId);
-    return StructureForID(source === 'api' ? driverFromId : driverFromId?.toJSON());
+    return CommonStructureToAll(source === 'api' ? driverFromId : driverFromId?.toJSON());
 }
 
 //Busca Driver en DB y API según primer nombre
@@ -55,7 +65,7 @@ const DriverByName = async (forename)=>{
     const uniqueDrivers = combinedDrivers.filter((driver, index, self) =>
             index === self.findIndex((d) => (d.id === driver.id)));
     const limitedDrivers = uniqueDrivers.slice(0, 15);
-    const formattedDrivers = StructureForName(limitedDrivers);
+    const formattedDrivers = CommonStructureToAll(limitedDrivers);
 
     return formattedDrivers;
 }

@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+const path = require('path');
 
 module.exports = (sequelize) => {
 
@@ -24,12 +25,7 @@ module.exports = (sequelize) => {
     image: {
       type: DataTypes.STRING,
       allowNull: false,
-      set(value) {
-        if (value==="") {
-          this.setDataValue('image', "https://drive.google.com/file/d/1quRhU8FwVxVV7qWMy6JWdQOpY6ls8AeC/view?usp=sharing")
-        } else {
-          this.setDataValue('image', (value))};
-      },
+      defaultValue: '',
     },
 
     dob: {
