@@ -5,19 +5,33 @@ const sequelize = require ('sequelize')
 
 const {Driver, Team} = require ("../db");
 const CommonStructureToAll = (drivers) => {
-  return drivers.map(driver => {
+  if (!Array.isArray(drivers)) {
+    return {
+      id: drivers.id || null,
+      forename: drivers.forename || drivers.name.forename || null,
+      surname: drivers.surname || drivers.name.surname || null,
+      teams: drivers.teams || [],
+      dob: drivers.dob || null,
+      nationality: drivers.nationality || null,
+      description: drivers.description || null,
+      image: drivers.image?.url || drivers.image || null,
+      created: drivers.created !== undefined ? drivers.created : false,
+    };
+  } else {
+    return drivers.map((driver) => {
       return {
-          id: driver.id || null,
-          forename: driver.forename || driver.name.forename || null,
-          surname: driver.surname || driver.name.surname || null,
-          teams: driver.teams || [],
-          dob: driver.dob || null,
-          nationality: driver.nationality || null,
-          description: driver.description || null,
-          image: driver.image?.url || driver.image || null,
-          created: driver.created !== undefined ? driver.created : false,
+        id: driver.id || null,
+        forename: driver.forename || driver.name.forename || null,
+        surname: driver.surname || driver.name.surname || null,
+        teams: driver.teams || [],
+        dob: driver.dob || null,
+        nationality: driver.nationality || null,
+        description: driver.description || null,
+        image: driver.image?.url || driver.image || null,
+        created: driver.created !== undefined ? driver.created : false,
       };
-  });
+    });
+  }
 };
 
 //Entrega todos los Drivers y estructura los datos
