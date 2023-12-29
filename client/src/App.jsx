@@ -11,15 +11,17 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div>
-      <h1>PI Drivers</h1>
-      </div>
+      <div className="app-container">
+        <header className="header">
+          <h1 className="title">PI Drivers</h1>
+        </header>
       <Routes>
         <Route exact path= "/home" element={<HomePage/>}/>
         <Route path= "/home/:id" element={<DetailPage/>}/>
         <Route path= "/form" element={<FormPage/>}/>
         <Route path= "/landing" element={<LandingPage/>}/>
       </Routes>
+      </div>
     </BrowserRouter>
   )
 }

@@ -1,6 +1,11 @@
-import { GET_DRIVERS, GET_BY_NAME } from "../Actions/Actions";
+import { GET_DRIVERS, GET_BY_NAME, GET_BY_ID } from "../Actions/Actions";
 
-let initialState = {allDrivers:[], driversCopy:[], createDriver:[]};
+let initialState = {
+    allDrivers:[], 
+    driversCopy:[], 
+    createDriver:[], 
+    driverDetails: {}
+};
 
 function rootReducer(state= initialState, action){
     switch(action.type){
@@ -14,6 +19,11 @@ function rootReducer(state= initialState, action){
             return{
                 ...state,
                 allDrivers:[...action.payload],
+            };
+        case GET_BY_ID:
+            return{
+                ...state,
+                driverDetails:action.payload,
             };
 
         default:

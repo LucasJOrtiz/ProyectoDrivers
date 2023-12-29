@@ -2,6 +2,7 @@ import axios from "axios"
 
 export const GET_DRIVERS = "GET_DRIVERS"
 export const GET_BY_NAME = "GET_BY_NAME"
+export const GET_BY_ID = "GET_BY_ID"
 
 export function getDrivers(){
     return async function (dispatch){
@@ -45,6 +46,30 @@ export function getByName(name){
           }
         } catch (error) {
             console.error('Error founding name driver on front:', error);
+            throw error;
+        }
+    }
+}
+
+export function getById(id){
+    return async function (dispatch){
+        try {
+            const response = await axios(` http://localhost:3001/drivers/${id}`); 
+            
+            if (response.data && Object.keys(response.data).length !== 0) {
+            return dispatch({
+                type: "GET_BY_ID",
+                payload: response.data, 
+            });
+        } else {
+            console.error('Can not read id', response.data);
+            return dispatch({
+              type: "GET_BY_ID",
+              payload: {},
+            });
+          }
+        } catch (error) {
+            console.error('Error founding id driver on front:', error);
             throw error;
         }
     }

@@ -9,9 +9,5 @@ grid-template-columns: 1fr 1fr 1fr;
 font-size:small;
 font-family:'Courier New', Courier, monospace;
 color: rgb(0, 0, 0);
-}
-
-.card:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-  transform: scale(1.05);
+margin-bottom: 45px;
 }
