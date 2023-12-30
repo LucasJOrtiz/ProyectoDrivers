@@ -15,7 +15,7 @@ function Navbar({searchString, handleChange, handleSubmit}) {
           className='navbar'
           value={searchString}
           onChange={handleChange}
-          placeholder='Enter the name' />
+          placeholder='Find your Driver' />
           <button 
           className='button'
           type='submit'>Go!</button>
