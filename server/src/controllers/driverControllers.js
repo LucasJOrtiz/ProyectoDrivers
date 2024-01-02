@@ -85,15 +85,48 @@ const DriverByName = async (forename)=>{
 }
 
 //Relación Driver-Team y Creación de Driver en DB
-const createDriverDB = async (forename, surname, description, image, nationality, dob, teams)=>{
-    console.log('Creating driver on DB...');
+const existingDriverDB = async (forename, surname) => {
+  const existingDriver = await Driver.findOne({ where: { forename, surname } });
+  return !!existingDriver;
+};
 
-    const existingDriver = await Driver.findOne({ where: { forename, surname } });
-    if (existingDriver) {
-        throw new Error('This driver already exists');
+const existingDriverAPI = async (forename, surname) => {
+  const response = await axios.get('http://localhost:5000/drivers');
+  const driversData = response.data && response.data.data;
+
+    if (driversData && driversData.length > 0) {
+      const foundDriver = driversData.find(driver => driver.name.forename === forename && driver.name.surname === surname);
+      return !!foundDriver;
     }
 
-    const driverCreated = await Driver.create ({forename, surname, description, image, nationality, dob});
+    return false;
+  }
+
+const createDriverDB = async (forename, surname, description, image, nationality, dob, teams)=>{
+    console.log('Creating driver on DB...');
+    
+    const isDriverInAPI = await existingDriverAPI(forename, surname);
+  
+    if (isDriverInAPI) {
+      throw new Error('Driver already exists in the API');
+    }
+
+    const isDriverInDB = await existingDriverDB(forename, surname);
+
+    if (isDriverInDB) {
+      throw new Error('Driver already exists in DB');
+    }
+
+    const driverData = {
+      forename,
+      ...(surname && { surname }),
+      ...(description && { description }),
+      ...(image && { image }),
+      ...(nationality && { nationality }),
+      ...(dob && { dob }),
+  };
+
+    const driverCreated = await Driver.create(driverData);
 
     const formatTeamName = (name) => {
       return name.toLowerCase().split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -101,8 +134,16 @@ const createDriverDB = async (forename, surname, description, image, nationality
 
   if (!teams) {
     console.log('No teams provided for the driver');
-} else if (typeof teams === 'string') {
-    const teamNames = teams.split(',').map(team => team.trim());
+  } else {
+    let teamNames = [];
+  if (typeof teams === 'string') {
+    teamNames = teams.split(',').map(team => team.trim());
+  } else if (Array.isArray(teams)) {
+    teamNames = teams;
+  } else {
+    throw new Error('The value of teams is not valid');
+  }
+
     const teamIds = [];
 
     for (const teamName of teamNames) {
@@ -116,29 +157,27 @@ const createDriverDB = async (forename, surname, description, image, nationality
     }
 
     await driverCreated.setTeams(teamIds);
-} else {
-    throw new Error('The value of teams is not valid');
-}
+} 
 
 const driverTeams = await driverCreated.getTeams();
 
-    const driverData = {
-        id: driverCreated.id,
-        created: true,
-        forename: driverCreated.forename,
-        surname: driverCreated.surname,
-        description: driverCreated.description,
-        image: driverCreated.image,
-        nationality: driverCreated.nationality,
-        dob: driverCreated.dob,
-        teams: driverTeams.map(team => ({
-            id: team.id,
-            name: team.name
-        }))
-    };
+const driverResponse = {
+  id: driverCreated.id,
+  created: true,
+  forename: driverCreated.forename,
+  surname: driverCreated.surname,
+  description: driverCreated.description,
+  image: driverCreated.image,
+  nationality: driverCreated.nationality,
+  dob: driverCreated.dob,
+  teams: driverTeams.map(team => ({
+    id: team.id,
+    name: team.name
+  }))
+};
 
-    console.log(`Created driver: ${driverData.forename} ${driverData.surname}`);
-    return { data: driverData };
+console.log(`Created driver: ${driverData.forename} ${driverData.surname}`);
+return { data: driverData };
 };
 
 //Ubicación, mapeo y formateo de teams
@@ -157,7 +196,7 @@ const AllTeamsFromAPI = () => {
   let teamsArray = [];
 
   drivers.forEach(driver => {
-    if (driver.teams) {
+    if (typeof driver.teams === 'string') {
       const teams = driver.teams.split(',').map(team => team.trim());
       teamsArray = teamsArray.concat(teams);
     }
@@ -174,6 +213,7 @@ const AllTeamsFromAPI = () => {
 
   console.log('Teams found: ', sortedTeams);
   console.log(`There are ${sortedTeams.length} teams in total.`);
+  
   return sortedTeams;
 };
 

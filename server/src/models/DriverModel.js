@@ -24,8 +24,12 @@ module.exports = (sequelize) => {
 
     image: {
       type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: '',
+      validate: {
+        isURL: {
+          args: true,
+          msg: 'Image should be a valid URL',
+        },
+      },
     },
 
     dob: {
