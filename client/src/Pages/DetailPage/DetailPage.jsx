@@ -52,6 +52,7 @@ function DetailPage() {
           </a> 🏁
           </p>
     </div>
+      <div className="text"><p>- {driverDetails.data.id} -</p></div>
     </div>
   );
 }

@@ -3,6 +3,8 @@ import axios from "axios"
 export const GET_DRIVERS = "GET_DRIVERS"
 export const GET_BY_NAME = "GET_BY_NAME"
 export const GET_BY_ID = "GET_BY_ID"
+export const GET_TEAMS = "GET_TEAMS"
+export const GET_BY_SOURCE = "GET_BY_SOURCE"
 
 export function getDrivers(){
     return async function (dispatch){
@@ -75,12 +77,75 @@ export function getById(id){
     }
 }
 
-export const createDriver = async (driverData) => {
+export function getBySource(source){
+    return async function (dispatch){
+        try {
+            const response = await axios("http://localhost:3001/drivers"); 
+
+                    let filteredDrivers;
+            if (source === 'API') {
+                filteredDrivers = response.data.data.filter(driver => typeof driver.id === 'number');
+            } else if (source === 'DB') {
+                filteredDrivers = response.data.data.filter(driver => typeof driver.id === 'string' && isUUID(driver.id));
+            } else {
+                filteredDrivers = response.data.data;
+            }
+        
+              return dispatch({
+                type: "GET_BY_SOURCE",
+                payload: filteredDrivers,
+              });
+            } catch (error) {
+              console.error('Error obtaining drivers by source:', error);
+              throw error;
+            }
+          };
+        }
+
+    const isUUID = (str) => {
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        return uuidRegex.test(str);
+};
+
+export function getTeams(){
+    return async function (dispatch){
+        try {
+            const response = await axios("http://localhost:3001/teams"); 
+
+            const teams = response.data.data;
+            
+            return dispatch({
+                type: "GET_TEAMS",
+                payload: teams, 
+            });
+        } catch (error) {
+            console.error('Error founding all teams on front:', error);
+            throw error;
+        }
+    }
+}
+
+export const createDriver = (driverData) => {
+    return async (dispatch) => {
     try {
-        const response = await axios.post('http://localhost:5000/drivers', driverData);
-        return response.data;
+        const response = await fetch('http://localhost:3001/drivers', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(driverData),
+          });
+          if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(errorMessage);
+          }
+    
+          const data = await response.json();
+    
+          return data;
     } catch (error) {
         console.error('Error creating driver:', error);
     throw error;
   }
 };
+}
