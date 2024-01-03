@@ -36,7 +36,9 @@ const CommonStructureToAll = (drivers) => {
 
 //Entrega todos los Drivers y estructura los datos
 const AllDrivers = async ()=>{
-    const infoDB = await Driver.findAll()
+    const infoDB = await Driver.findAll({
+      include: [{ model: Team }],
+    })
     const driversDB = CommonStructureToAll (infoDB);
     const infoAPI = (await axios.get ("http://localhost:5000/drivers")).data;
     const driversAPI = CommonStructureToAll (infoAPI).map(driver => {
@@ -202,13 +204,7 @@ const AllTeamsFromAPI = () => {
     }
   });
 
-  const formattedTeams = teamsArray.map(team => {
-    return team.includes(' ')
-      ? team.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-      : team.charAt(0).toUpperCase() + team.slice(1).toLowerCase();
-  });
-
-  const uniqueTeams = [...new Set(formattedTeams)];
+  const uniqueTeams = [...new Set(teamsArray)];
   const sortedTeams = uniqueTeams.sort();
 
   console.log('Teams found: ', sortedTeams);
