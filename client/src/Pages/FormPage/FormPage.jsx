@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-use-history';
+import { Link } from 'react-router-dom';
 import { getTeams, createDriver } from '../../Redux/Actions/Actions';
+import './FormPage.css'
 
 function FormPage() {
   const dispatch = useDispatch();
@@ -143,7 +145,18 @@ function FormPage() {
 
   return (
     <div>
+        <button className="nav-button">
+          <Link to="/welcome">Welcome</Link>
+        </button>
+        <button className="nav-button">
+          <Link to="/home">Home</Link>
+        </button>
+        <button className="nav-button">
+          <Link to="/aboutme">About Me</Link>
+        </button>
+
       <h1>Create a New Driver</h1>
+      <div className="container">
       <form onSubmit={handleSubmit}>
       {backendError && <div style={{ color: 'red' }}>{backendError}</div>}
         <div>
@@ -202,7 +215,6 @@ function FormPage() {
         </div>
 
         <div>
-          <label>Teams * </label>
             <select
               name="teams"
               multiple
@@ -217,12 +229,13 @@ function FormPage() {
             </select>
             {error.teams && <span>{error.teams}</span>}
             <div>
+              <label>* </label>
             <strong>Selected Teams:</strong>
             {Array.isArray(input.teams) && (
               <ul>
                 {input.teams.map((team, index) => (
                   <li key={index}>{team}</li>
-                ))}
+                  ))}
               </ul>
             )}
           </div>
@@ -241,6 +254,7 @@ function FormPage() {
           <p>* Fields are mandatory</p>
         <button type="submit">Create</button>
       </form>
+      </div>
     </div>
   );
 }

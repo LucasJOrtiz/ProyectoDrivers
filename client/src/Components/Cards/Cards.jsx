@@ -5,10 +5,17 @@ import { getDrivers } from '../../Redux/Actions/Actions';
 
 import './Cards.css'
 
-function Cards() {
+function Cards({ allDrivers, currentPage, changePage }) {
   const dispatch = useDispatch();
   const allMyDrivers = useSelector((state) => state.allDrivers);
   const [loading, setLoading] = useState(true);
+  const driversPerPage = 9;
+  const indexOfLastDriver = currentPage * driversPerPage;
+  const indexOfFirstDriver = indexOfLastDriver - driversPerPage;
+  const currentDrivers = allMyDrivers.slice(
+    indexOfFirstDriver,
+    indexOfLastDriver
+  );
 
   useEffect(() => {
     dispatch(getDrivers()).then(() => {
@@ -16,22 +23,30 @@ function Cards() {
     });
   }, [dispatch]);
 
-  const getRandomDrivers = (drivers, count) => {
-    const shuffledDrivers = [...drivers].sort(() => 0.5 - Math.random());
-    return shuffledDrivers.slice(0, count);
-  };
-
-  const randomDrivers = getRandomDrivers(allMyDrivers, 9);
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(allDrivers.length / driversPerPage); i++) {
+    pageNumbers.push(i);
+  }
 
   if (loading) {
     return <div>Cargando...</div>;
   }
 
   return (
+    <div className='cards-wrapper'>
+      <div>
+        {pageNumbers.map((number) => (
+          <button key={number} onClick={() => changePage(number)} className="pagination">
+            {number}
+          </button>
+        ))}
+      </div>
+
     <div className='cards'>
-      {randomDrivers.map((driver, index) => (
+      {currentDrivers.map((driver, index) => (
         <Card key={index} driver={driver} />
       ))}
+    </div>
     </div>
   );
 }

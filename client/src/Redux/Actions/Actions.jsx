@@ -5,6 +5,8 @@ export const GET_BY_NAME = "GET_BY_NAME"
 export const GET_BY_ID = "GET_BY_ID"
 export const GET_TEAMS = "GET_TEAMS"
 export const GET_BY_SOURCE = "GET_BY_SOURCE"
+export const GET_BY_TEAM = "GET_BY_TEAM"
+export const GET_FORENAME_DRIVERS = "GET_FORENAME_DRIVERS"
 
 export function getDrivers(){
     return async function (dispatch){
@@ -106,6 +108,43 @@ export function getBySource(source){
         const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         return uuidRegex.test(str);
 };
+
+export function getByTeam(team){
+    return async function (dispatch){
+        try {
+            const response = await axios('http://localhost:3001/drivers'); 
+            
+            if (response.data && Array.isArray(response.data.data)) {
+                const drivers = response.data.data;
+
+                const driversByTeam = drivers.filter(driver => {
+                    if (typeof driver.teams === 'string') {
+                    const driverTeams = driver.teams.split(',').map(team => team.trim());
+                    return driverTeams.includes(team);
+                } else if (Array.isArray(driver.teams)) {
+                    return driver.teams.includes(team);
+                  }
+                return false;
+            });
+                
+                return dispatch({
+                    type: "GET_BY_TEAM",
+                    payload: driversByTeam, 
+                });
+        } else {
+            console.error('Invalid data format for drivers');
+            
+            return dispatch({
+                type: "GET_BY_TEAM",
+                payload: [],
+              });
+        }
+        } catch (error) {
+            console.error('Error founding team driver on front:', error);
+            throw error;
+        }
+    }
+}
 
 export function getTeams(){
     return async function (dispatch){
