@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Card from '../Card/Card';
 import { getDrivers } from '../../Redux/Actions/Actions';
 
 import './Cards.css'
 
-function Cards({ allDrivers, currentPage, changePage }) {
+function Cards({ allDrivers, currentPage, changePage, sortedFilteredDrivers }) {
   const dispatch = useDispatch();
-  const allMyDrivers = useSelector((state) => state.allDrivers);
   const [loading, setLoading] = useState(true);
   const driversPerPage = 9;
   const indexOfLastDriver = currentPage * driversPerPage;
   const indexOfFirstDriver = indexOfLastDriver - driversPerPage;
-  const currentDrivers = allMyDrivers.slice(
+  const currentDrivers = sortedFilteredDrivers.slice(
     indexOfFirstDriver,
     indexOfLastDriver
   );

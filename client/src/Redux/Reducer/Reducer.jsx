@@ -5,16 +5,15 @@ import {
     GET_TEAMS,
     GET_BY_SOURCE, 
     GET_BY_TEAM,
-    GET_FORENAME_DRIVERS
 } from "../Actions/Actions";
 
 let initialState = {
     allDrivers:[], 
+    driversCopy:[], 
     createDriver:[], 
     driverDetails: {},
     allTeams:[],
     forenameDrivers: [],
-    driversCopy:[], 
 };
 
 function rootReducer(state= initialState, action){

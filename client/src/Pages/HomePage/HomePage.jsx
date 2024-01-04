@@ -53,6 +53,8 @@ function HomePage() {
   const [selectedSource, setSelectedSource] = useState('');
   const [filteredDrivers, setFilteredDrivers] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
+  const [orderBy, setOrderBy] = useState('ASC');
+  const [orderDirection, setOrderDirection] = useState('forename', 'dob');
   
   const handleSourceFilter = (source) => {
     if (source === 'API' || source === 'DB') {
@@ -61,6 +63,10 @@ function HomePage() {
           setFilteredDrivers(response.payload);
           setSelectedSource(source);
         }
+      }).catch((error) => {
+        console.error('Error fetching drivers by source:', error);
+        setFilteredDrivers([]);
+        setSelectedSource('');
         });
         } else if (source === '') { 
           dispatch(getDrivers()).then((response) => {
@@ -68,6 +74,10 @@ function HomePage() {
               setFilteredDrivers(response.payload);
               setSelectedSource('');
             }
+          }).catch((error) => {
+            console.error('Error fetching all drivers:', error);
+            setFilteredDrivers([]);
+            setSelectedSource('');
           });
     } else {
       console.error('Invalid source. Please select a valid source.');
@@ -100,16 +110,55 @@ function HomePage() {
     }}
   };
 
-useEffect(() => {
-    let filteredResults = allDrivers;
-    if (selectedSource !== '') {
-      filteredResults = filteredDrivers.filter((driver) => driver.source === selectedSource);
+const handleOrderByChange = (e) => {
+    setOrderBy(e.target.value);
+    if (e.target.value === 'forename') {
+      setOrderDirection('ASC');
+    } else if (e.target.value === 'dob') {
+      setOrderDirection('newDate');
     }
+  };
+  const handleOrderDirectionChange = (e) => {
+    setOrderDirection(e.target.value);
+  };
+  useEffect(() => {
+    let filteredResults = [...allDrivers];
+  
+    if (selectedSource !== '') {
+      filteredResults = allDrivers.filter((driver) => driver.source === selectedSource);
+    }
+  
     if (selectedTeam !== '') {
       filteredResults = filteredResults.filter((driver) => driver.teams.includes(selectedTeam));
     }
-    setFilteredDrivers(filteredResults);
-}, [selectedSource, selectedTeam, allDrivers]);
+  
+    let sortedFilteredResults = [...filteredResults];
+  
+    if (orderBy === 'forename') {
+      sortedFilteredResults.sort((a, b) => {
+        if (orderDirection === 'ASC') {
+          return a.forename.localeCompare(b.forename);
+        } else if (orderDirection === 'DESC') {
+          return b.forename.localeCompare(a.forename);
+        }
+        return 0;
+      });
+    } else if (orderBy === 'dob') {
+      sortedFilteredResults.sort((a, b) => {
+        const dateA = new Date(a.dob);
+        const dateB = new Date(b.dob);
+        if (orderDirection === 'newDate') {
+          return dateA - dateB;
+        } else if (orderDirection === 'oldDate') {
+          return dateB - dateA;
+        }
+        return 0;
+      });
+    }
+  
+    console.log("Filtered Results:", sortedFilteredResults);
+    setFilteredDrivers(sortedFilteredResults);
+  }, [selectedSource, selectedTeam, orderBy, orderDirection, allDrivers]);
 
 return (
   <div className='home'>
@@ -158,12 +207,37 @@ return (
           ))}
           </select>
         </div>
+
+        
+      <div className="filter">
+      <p>Order by: </p>
+        <select value={orderBy} onChange={handleOrderByChange}>
+          <option value="forename">Name</option>
+          <option value="dob">Birthday</option>
+        </select>
+
+        <select value={orderDirection} onChange={handleOrderDirectionChange}>
+          {orderBy === 'forename' ? (
+            <>
+          <option value="ASC">A-Z</option>
+          <option value="DESC">Z-A</option>
+          </>
+          ) : orderBy === 'dob' ? (
+            <>
+          <option value="oldDate">Youngest</option>
+          <option value="newDate">Older</option>
+          </>
+          ) : null}
+        </select>
+      </div>
+
       </div>
 
       {error && <p className="message">{error}</p>}
 
       <Cards
         allDrivers={allDrivers} 
+        sortedFilteredDrivers={filteredDrivers}
         currentPage={currentPage} 
         changePage={changePage}
       />
