@@ -1,8 +1,8 @@
 .card {
   display: flex;
   flex-direction: column;
-  background-color: rgba(0, 195, 255, 0.336);
-  border: 3px solid rgb(76, 62, 160);
+  background-color: rgba(0, 17, 255, 0.349);
+  border: 3px solid rgb(64, 62, 160);
   border-radius: 5px;
   padding: 15px;
   cursor: pointer;
@@ -67,7 +67,7 @@
 
 .card a:hover {
   text-decoration: none;
-  -webkit-text-stroke: 1px #646cff96;
+  -webkit-text-stroke: 1px #1f2afc96;
   color: rgb(255, 255, 255);
 }
 
@@ -80,7 +80,7 @@
 }
 
 .card:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #fa2525aa);
   transform: scale(1.05);
-  background-color: rgb(0, 195, 255);
+  background-color: rgba(255, 139, 109, 0.377);
 }

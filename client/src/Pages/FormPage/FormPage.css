@@ -12,8 +12,34 @@
     background-color: #e0e0e0;
   }
 
+  .select-container {
+    height: 120px; 
+    overflow-y: auto; 
+    border-radius: 5px;
+  }
+
+  .select-container::-webkit-scrollbar {
+    width: 15px; 
+  }
+  
+  .select-container::-webkit-scrollbar-thumb {
+    height: 15px;
+  }
+
   .container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    overflow-y:auto;
+    max-height: calc(80vh - 100px);
+  }
+
+  .selected-teams-container > div {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+  }
+  
+  .selected-teams-container > div button {
+    margin-left: auto; 
   }

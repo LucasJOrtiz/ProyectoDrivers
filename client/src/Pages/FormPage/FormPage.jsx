@@ -256,8 +256,11 @@ const handleRemoveTeam = (team) => {
             />
         </div>
 
+          <label>* </label>
+        <strong>Selected Teams:</strong>
         <div>
             <select
+            className="select-container"
               name="teams"
               multiple
               value={selectedTeams}
@@ -271,17 +274,15 @@ const handleRemoveTeam = (team) => {
             </select>
             {error.teams && <span>{error.teams}</span>}
             <div>
-              <label>* </label>
-            <strong>Selected Teams:</strong>
             {Array.isArray(selectedTeams) && selectedTeams.length > 0 && (
-              <ul>
+              <div className="selected-teams-container">
                 {selectedTeams.map((team, index) => (
-                  <li key={index}>
-                <button onClick={(e) => { e.preventDefault(); handleRemoveTeam(team); }}>x</button>
+                  <div key={index}>
                   {team}
-                  </li>
+                    <button onClick={(e) => { e.preventDefault(); handleRemoveTeam(team); }}>x</button>
+                  </div>
                   ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>

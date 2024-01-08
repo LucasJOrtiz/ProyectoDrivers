@@ -58,13 +58,13 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    background-color: rgba(0, 100, 139, 0.404);
+    background-color: rgba(64, 107, 250, 0.404);
     border-radius: 5px;
     padding: 15px;
 }
 
 .filter select:hover {
-    filter: drop-shadow(0 0 2em #64ffc4aa);
+    filter: drop-shadow(0 0 2em #ff6498aa);
     cursor: pointer; 
 }
 

@@ -15,6 +15,10 @@ margin-bottom: 45px;
 .pagination:hover {
     text-decoration: none;
     color: inherit; 
-    filter: drop-shadow(0 0 1em #fbff2281);
+    filter: drop-shadow(0 0 1em #22aeffd5);
     cursor: pointer; 
+}
+
+.selected {
+    background-color: #174dff;
 }

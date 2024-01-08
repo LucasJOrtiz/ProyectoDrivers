@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { getById, clearDetail } from '../../Redux/Actions/Actions';
@@ -48,6 +48,17 @@ function DetailPage() {
 
   return (
     <div className="detail-page">
+      <div className="navigation-buttons">
+        <button className="nav-button">
+          <Link to="/welcome">Welcome</Link>
+        </button>
+        <button className="nav-button">
+          <Link to="/home">Home</Link>
+        </button>
+        <button className="nav-button">
+          <Link to="/aboutme">About Me</Link>
+        </button>
+      </div>
       <div className="image-container">{renderImage()}</div>
       <div className="driver-details">
       <h1>🚦 This is {driverDetails.data.forename} {driverDetails.data.surname} 🚦</h1>

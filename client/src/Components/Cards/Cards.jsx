@@ -13,6 +13,7 @@ function Cards({ allDrivers, currentPage, changePage, sortedFilteredDrivers }) {
   const indexOfFirstDriver = indexOfLastDriver - driversPerPage;
   const [filteredDrivers, setFilteredDrivers] = useState([]);
   const totalDrivers = sortedFilteredDrivers.length || allDrivers.length;
+  const [selectedPage, setSelectedPage] = useState(currentPage);
   const currentDrivers = filteredDrivers.slice(
     indexOfFirstDriver,
     indexOfLastDriver
@@ -31,6 +32,10 @@ function Cards({ allDrivers, currentPage, changePage, sortedFilteredDrivers }) {
     }
   }, [sortedFilteredDrivers, changePage, currentPage, driversPerPage]);
 
+  useEffect(() => {
+    setSelectedPage(currentPage);
+  }, [currentPage]);
+
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(totalDrivers / driversPerPage); i++) {
     pageNumbers.push(i);
@@ -44,7 +49,10 @@ function Cards({ allDrivers, currentPage, changePage, sortedFilteredDrivers }) {
     <div className='cards-wrapper'>
       <div>
         {pageNumbers.map((number) => (
-          <button key={number} onClick={() => changePage(number)} className="pagination">
+          <button 
+          key={number} 
+          onClick={() => changePage(number)} 
+          className={`pagination ${selectedPage === number ? 'selected' : ''}`}>
             {number}
           </button>
         ))}

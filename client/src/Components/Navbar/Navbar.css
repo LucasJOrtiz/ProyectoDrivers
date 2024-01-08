@@ -20,9 +20,9 @@
   }
 
   .container:hover{
-    background-color: #9fecff52;
+    background-color: #4264fc52;
     outline-color: rgb(35, 248, 255);
-    filter: drop-shadow(0 0 2em #64e8ffaa);
+    filter: drop-shadow(0 0 2em #6480ffaa);
   }
   
   .button {
