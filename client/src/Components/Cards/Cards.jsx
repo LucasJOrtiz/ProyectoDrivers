@@ -11,7 +11,9 @@ function Cards({ allDrivers, currentPage, changePage, sortedFilteredDrivers }) {
   const driversPerPage = 9;
   const indexOfLastDriver = currentPage * driversPerPage;
   const indexOfFirstDriver = indexOfLastDriver - driversPerPage;
-  const currentDrivers = sortedFilteredDrivers.slice(
+  const [filteredDrivers, setFilteredDrivers] = useState([]);
+  const totalDrivers = sortedFilteredDrivers.length || allDrivers.length;
+  const currentDrivers = filteredDrivers.slice(
     indexOfFirstDriver,
     indexOfLastDriver
   );
@@ -21,9 +23,16 @@ function Cards({ allDrivers, currentPage, changePage, sortedFilteredDrivers }) {
       setLoading(false);
     });
   }, [dispatch]);
+  
+  useEffect(() => {
+    setFilteredDrivers(sortedFilteredDrivers);
+    if (currentPage > Math.ceil(sortedFilteredDrivers.length / driversPerPage)) {
+      changePage(1); 
+    }
+  }, [sortedFilteredDrivers, changePage, currentPage, driversPerPage]);
 
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(allDrivers.length / driversPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(totalDrivers / driversPerPage); i++) {
     pageNumbers.push(i);
   }
 

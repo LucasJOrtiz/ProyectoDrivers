@@ -172,8 +172,18 @@ const handleMultipleTeams = (selectedTeam) => {
       teams: [...input.teams, selectedTeam],
     });
   }
+  e.preventDefault();
 };
 
+const handleRemoveTeam = (team) => {
+  setSelectedTeams((prevSelectedTeams) =>
+    prevSelectedTeams.filter((selectedTeam) => selectedTeam !== team)
+  );
+  setInput({
+    ...input,
+    teams: input.teams.filter((selectedTeam) => selectedTeam !== team),
+  });
+};
 
   return (
     <div>
@@ -267,7 +277,7 @@ const handleMultipleTeams = (selectedTeam) => {
               <ul>
                 {selectedTeams.map((team, index) => (
                   <li key={index}>
-                <button onClick={() => handleMultipleTeams(team)}>x</button>
+                <button onClick={(e) => { e.preventDefault(); handleRemoveTeam(team); }}>x</button>
                   {team}
                   </li>
                   ))}

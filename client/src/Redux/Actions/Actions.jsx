@@ -86,11 +86,11 @@ export function getBySource(source){
         try {
             const response = await axios("http://localhost:3001/drivers"); 
 
-                    let filteredDrivers;
+            let filteredDrivers;
             if (source === 'API') {
                 filteredDrivers = response.data.data.filter(driver => typeof driver.id === 'number');
             } else if (source === 'DB') {
-                filteredDrivers = response.data.data.filter(driver => typeof driver.id === 'string' && isUUID(driver.id));
+                filteredDrivers = response.data.data.filter(driver => driver.created === true);
             } else {
                 filteredDrivers = response.data.data;
             }

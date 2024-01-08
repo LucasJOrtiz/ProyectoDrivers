@@ -57,8 +57,10 @@ function HomePage() {
   const [orderDirection, setOrderDirection] = useState('forename', 'dob');
   
   const handleSourceFilter = (source) => {
+
     if (source === 'API' || source === 'DB') {
       dispatch(getBySource(source)).then((response) => {
+
         if (response.payload) {
           setFilteredDrivers(response.payload);
           setSelectedSource(source);
@@ -84,30 +86,27 @@ function HomePage() {
     }
     setSelectedTeam('');
   };
+
+  const handleTeamFilter = (teamId) => {
+    const selectedTeam = allTeams.find((team) => team.id === teamId);
   
-  const handleTeamFilter = (selectedTeamIndex) => {  
-    const index = parseInt(selectedTeamIndex, 10);
-    if (index ===-1) {
+    if (selectedTeam) {
+      setSelectedTeam(selectedTeam.name);
+      const filteredDrivers = allDrivers.filter((driver) => {
+        if (typeof driver.teams === 'string') {
+          return driver.teams.includes(selectedTeam.name);
+        } else if (Array.isArray(driver.teams)) {
+          return driver.teams.includes(selectedTeam.name);
+        }
+        return false;
+      });
+  
+      setFilteredDrivers(filteredDrivers);
+    } else {
+      console.error("Error to find the id driver");
       setFilteredDrivers(allDrivers);
       setSelectedTeam('');
-    } else {
-      const selectedTeamName = allTeams[index];
-      setSelectedTeam(selectedTeamName);
-    
-      if (!selectedTeamName) {
-      dispatch(getDrivers()).then((response) => {
-        if (response.payload) {
-          setFilteredDrivers(response.payload);
-          setSelectedTeam('');
-        }
-      });
-    } else {
-      dispatch(getByTeam(selectedTeamName)).then((response) => {
-        if (response.payload) {
-          setFilteredDrivers(response.payload);
-        }
-      });
-    }}
+    }
   };
 
 const handleOrderByChange = (e) => {
@@ -121,12 +120,17 @@ const handleOrderByChange = (e) => {
   const handleOrderDirectionChange = (e) => {
     setOrderDirection(e.target.value);
   };
+
   useEffect(() => {
     let filteredResults = [...allDrivers];
   
     if (selectedSource !== '') {
-      filteredResults = allDrivers.filter((driver) => driver.source === selectedSource);
+      if (selectedSource === 'API') {
+      filteredResults = allDrivers.filter((driver) => typeof driver.id === 'number');
+    } else if (selectedSource === 'DB') {
+      filteredResults = allDrivers.filter((driver) => driver.created === true);
     }
+  }
   
     if (selectedTeam !== '') {
       filteredResults = filteredResults.filter((driver) => driver.teams.includes(selectedTeam));
@@ -196,15 +200,15 @@ return (
         <div className="filter">
         <p>Working with: </p>
         <select 
-          value={selectedTeam !== '' ? allTeams.findIndex(team => team.id === selectedTeam.id) : -1} 
-          onChange={(e) => handleTeamFilter(e.target.value)}
-        >
-          <option value={-1}>All Teams</option>
-          {allTeams.map((team) => (
-            <option key={team.id} value={team.id}>
-              {team.name}
-            </option>
-          ))}
+            value={selectedTeam ? selectedTeam.id : -1}
+            onChange={(e) => handleTeamFilter(e.target.value)}
+          >
+            <option value={-1}>All Teams</option>
+            {allTeams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
           </select>
         </div>
 
