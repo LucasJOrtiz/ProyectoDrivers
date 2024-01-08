@@ -5,8 +5,9 @@ const {
     getDriversHandler, 
     getIdHandler,
     getNameHandler,
-    getTeamsHandler
+    getTeamsHandler,
  } = require ("../handlers/driverHandlers")
+ const { getRelation } = require('../controllers/driverControllers');
 
 getRoutes.get ("/drivers", getDriversHandler);
 
@@ -15,5 +16,7 @@ getRoutes.get ("/drivers/:id", getIdHandler);
 getRoutes.get ("/name", getNameHandler);
 
 getRoutes.get ("/teams", getTeamsHandler);
+
+getRoutes.get ("/relation", getRelation);
 
 module.exports = getRoutes;

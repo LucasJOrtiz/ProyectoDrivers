@@ -73,7 +73,16 @@ const createDriverHandler = async (req,res) =>{
     console.log('Request for driver creation');
     const {forename, surname, description, image, nationality, dob, teams} = req.body;
     try{
-        const newDriver = await createDriverDB (forename, surname, description, image, nationality, dob, teams);
+        const newDriverData = {
+            forename,
+            surname,
+            description,
+            image,
+            nationality,
+            dob,
+            teams
+        };
+        const newDriver = await createDriverDB(newDriverData);
         res.status(200).json({
             msg: `${forename} ${surname} was created as a new driver`,
             data: newDriver
