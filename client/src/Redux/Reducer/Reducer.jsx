@@ -5,6 +5,7 @@ import {
     GET_TEAMS,
     GET_BY_SOURCE, 
     GET_BY_TEAM,
+    CLEAR_DETAIL
 } from "../Actions/Actions";
 
 let initialState = {
@@ -41,7 +42,7 @@ function rootReducer(state= initialState, action){
         case GET_TEAMS:
             return{
                 ...state,
-                allTeams:[...action.payload],
+                allTeams: action.payload,
             };
 
         case GET_BY_SOURCE:
@@ -57,6 +58,12 @@ function rootReducer(state= initialState, action){
                 allDrivers:[...action.payload],
                 driversCopy: [...action.payload],
             };
+
+        case CLEAR_DETAIL:
+        return{
+            ...state,
+            driverDetails: {},
+        };
 
         default:
             return state

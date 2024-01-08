@@ -89,59 +89,91 @@ function FormPage() {
     };
 
     const isValidImageUrl = (url) => {
-      return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
+      if (!url) {
+        return true;
+      }
+      return url.match(/\.(jpeg|jpg|gif|png)$/) !== null;
   };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const formattedTeams = input.teams.join(', ');
+    let teamsArray = Array.isArray(selectedTeams) ? selectedTeams : [selectedTeams];
+    const formattedTeams = teamsArray.join(', ');
+  
     const updatedInput = {
-      ...input,
-      teams: formattedTeams,
+      forename: input.forename,
+      surname: input.surname,
+      teams: formattedTeams, 
+      ...(input.image && isValidImageUrl(input.image) && { image: input.image }),
+      ...(input.dob && isValidDate(input.dob) && { dob: input.dob }),
+      ...(input.nationality && { nationality: input.nationality }),
+      ...(input.description && { description: input.description }),
     };
   
     setInput(updatedInput);
   
     if (validateForm()) {
-      try {
-        await dispatch(createDriver(updatedInput));
-        setInput({
-          forename: '',
-          surname: '',
-          image: '',
-          dob: '',
-          nationality: '',
-          description: '',
-          teams: [],
-        });
-        setBackendError('');
-        history.push('/created');
-      } catch (error) {
-        setBackendError('This Driver already exists in DB');
+      if (e.nativeEvent.submitter && e.nativeEvent.submitter.type === "submit") {
+        try {
+          const response = await dispatch(createDriver(updatedInput));
+          if (response && response.error) {
+            setBackendError(response.error.message);
+            return;
+          }
+          setInput({
+            forename: '',
+            surname: '',
+            image: '',
+            dob: '',
+            nationality: '',
+            description: '',
+            teams: [],
+          });
+          setBackendError('');
+          history.push('/created');
+        } catch (error) {
+          setBackendError('This Driver already exists');
+        }
       }
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-      setInput({
-        ...input,
-        [name]: value,
-      });
+  
+    setInput({
+      ...input,
+      [name]: value,
+    });
+  
+    setError((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }));
   };
 
-  const handleTeamChange = (e) => {
-    const selectedTeams = Array.from(e.target.options)
-      .filter((option) => option.selected)
-      .map((option) => option.value);
+const [selectedTeams, setSelectedTeams] = useState([]);
 
-      setInput((prevInput) => ({
-        ...prevInput,
-        teams: [...prevInput.teams, ...selectedTeams],
-      }));
-    };
+const handleMultipleTeams = (selectedTeam) => {
+
+  if (selectedTeams.includes(selectedTeam)) {
+    setSelectedTeams((prevSelectedTeams) =>
+      prevSelectedTeams.filter((team) => team !== selectedTeam)
+    );
+    setInput({
+      ...input,
+      teams: input.teams.filter((team) => team !== selectedTeam),
+    });
+  } else {
+    setSelectedTeams((prevSelectedTeams) => [...prevSelectedTeams, selectedTeam]);
+    setInput({
+      ...input,
+      teams: [...input.teams, selectedTeam],
+    });
+  }
+};
+
 
   return (
     <div>
@@ -218,12 +250,12 @@ function FormPage() {
             <select
               name="teams"
               multiple
-              value={input.teams}
-              onChange={handleTeamChange}
+              value={selectedTeams}
+              onChange={(e) => handleMultipleTeams(e.target.value)}
               >
               {teamsData.map((team) => (
-                <option key={team} value={team}>
-                  {team}
+                <option key={team.id} value={team.name}>
+                  {team.name}
                 </option>
               ))}
             </select>
@@ -231,10 +263,13 @@ function FormPage() {
             <div>
               <label>* </label>
             <strong>Selected Teams:</strong>
-            {Array.isArray(input.teams) && (
+            {Array.isArray(selectedTeams) && selectedTeams.length > 0 && (
               <ul>
-                {input.teams.map((team, index) => (
-                  <li key={index}>{team}</li>
+                {selectedTeams.map((team, index) => (
+                  <li key={index}>
+                <button onClick={() => handleMultipleTeams(team)}>x</button>
+                  {team}
+                  </li>
                   ))}
               </ul>
             )}

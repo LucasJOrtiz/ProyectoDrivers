@@ -7,6 +7,8 @@ export const GET_TEAMS = "GET_TEAMS"
 export const GET_BY_SOURCE = "GET_BY_SOURCE"
 export const GET_BY_TEAM = "GET_BY_TEAM"
 export const GET_FORENAME_DRIVERS = "GET_FORENAME_DRIVERS"
+export const CLEAR_DETAIL = "CLEAR_DETAIL"
+
 
 export function getDrivers(){
     return async function (dispatch){
@@ -108,6 +110,14 @@ export function getBySource(source){
         const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         return uuidRegex.test(str);
 };
+
+export function clearDetail(){
+    return function (dispatch){
+    return dispatch({
+        type: "CLEAR_DETAIL",
+    }
+    )
+}}
 
 export function getByTeam(team){
     return async function (dispatch){

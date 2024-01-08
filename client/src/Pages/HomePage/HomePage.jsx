@@ -156,7 +156,6 @@ const handleOrderByChange = (e) => {
       });
     }
   
-    console.log("Filtered Results:", sortedFilteredResults);
     setFilteredDrivers(sortedFilteredResults);
   }, [selectedSource, selectedTeam, orderBy, orderDirection, allDrivers]);
 
@@ -197,12 +196,13 @@ return (
         <div className="filter">
         <p>Working with: </p>
         <select 
-          value={selectedTeam !== '' ? allTeams.indexOf(selectedTeam) : -1} 
-          onChange={(e) => handleTeamFilter(e.target.value)}>
+          value={selectedTeam !== '' ? allTeams.findIndex(team => team.id === selectedTeam.id) : -1} 
+          onChange={(e) => handleTeamFilter(e.target.value)}
+        >
           <option value={-1}>All Teams</option>
-          {allTeams.map((team, index) => (
-            <option key={index} value={index}>
-              {team}
+          {allTeams.map((team) => (
+            <option key={team.id} value={team.id}>
+              {team.name}
             </option>
           ))}
           </select>

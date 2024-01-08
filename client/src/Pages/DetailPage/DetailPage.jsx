@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { getById } from '../../Redux/Actions/Actions';
+import { useEffect, useState } from 'react';
+import { getById, clearDetail } from '../../Redux/Actions/Actions';
 import Default from '../../assets/Default.png';
 
 import './DetailPage.css'
@@ -9,13 +9,22 @@ import './DetailPage.css'
 function DetailPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
 
   const driverDetails = useSelector((state) => state.driverDetails);
-  console.log(driverDetails)
 
   useEffect(() => {
-    dispatch(getById(id)); 
+    dispatch(getById(id))
+    .then(() => setIsLoading(false)) 
+    .catch(() => {
+      setIsLoading(false);
+      dispatch(clearDetail());
+    });
   }, [dispatch, id]);
+
+  if (isLoading) {
+    return <div>Loading driver...</div>; 
+  }
 
   if (!driverDetails || Object.keys(driverDetails).length === 0) {
     return <div>Driver details not found</div>;
