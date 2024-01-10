@@ -142,6 +142,10 @@ function FormPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
   
+    if (name === 'forename' || name === 'surname') {
+      setBackendError('');
+    }
+    
     setInput({
       ...input,
       [name]: value,
@@ -171,6 +175,13 @@ const handleMultipleTeams = (selectedTeam) => {
       ...input,
       teams: [...input.teams, selectedTeam],
     });
+  
+  if (error.teams && selectedTeams.length > 0) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        teams: '',
+      }));
+    }
   }
   e.preventDefault();
 };
@@ -199,9 +210,9 @@ const handleRemoveTeam = (team) => {
 
       <h1>Create a New Driver</h1>
       <div className="container">
-      <form onSubmit={handleSubmit}>
-      {backendError && <div style={{ color: 'red' }}>{backendError}</div>}
-        <div>
+      <form onSubmit={handleSubmit} className="form-container">
+
+        <div className="form-group">
          <label>* </label>
             <input
               type="text"
@@ -210,10 +221,10 @@ const handleRemoveTeam = (team) => {
               value={input.forename}
               onChange={handleChange}
             />
-            {error.forename && <span>{error.forename}</span>}
+            {error.forename && <span className="error-message">{error.forename}</span>}
         </div>
 
-        <div>
+        <div className="form-group">
           <label>* </label>
             <input
               type="text"
@@ -222,10 +233,10 @@ const handleRemoveTeam = (team) => {
               value={input.surname}
               onChange={handleChange}
             />
-            {error.surname && <span>{error.surname}</span>}
+            {error.surname && <span className="error-message">{error.surname}</span>}
         </div>
 
-        <div>
+        <div className="form-group">
             <input
               type="text"
               placeholder="Date of Birth"
@@ -233,7 +244,7 @@ const handleRemoveTeam = (team) => {
               value={input.dob}
               onChange={handleChange}
             />
-            {error.dob && <span>{error.dob}</span>}
+            {error.dob && <span className="error-message">{error.dob}</span>}
         </div>
 
         <div>
@@ -258,7 +269,7 @@ const handleRemoveTeam = (team) => {
 
           <label>* </label>
         <strong>Selected Teams:</strong>
-        <div>
+        <div className="form-group">
             <select
             className="select-container"
               name="teams"
@@ -272,7 +283,9 @@ const handleRemoveTeam = (team) => {
                 </option>
               ))}
             </select>
-            {error.teams && <span>{error.teams}</span>}
+            {error.teams && selectedTeams.length === 0 && (
+            <span className="error-message">{error.teams}</span>
+          )}
             <div>
             {Array.isArray(selectedTeams) && selectedTeams.length > 0 && (
               <div className="selected-teams-container">
@@ -287,7 +300,7 @@ const handleRemoveTeam = (team) => {
           </div>
         </div>
 
-        <div>
+        <div className="form-group">
             <input
               type="text"
               placeholder="Image"
@@ -295,9 +308,10 @@ const handleRemoveTeam = (team) => {
               value={input.image}
               onChange={handleChange}
             />
-            {error.image && <span>{error.image}</span>}
+            {error.image && <span className="error-message">{error.image}</span>}
         </div>
           <p>* Fields are mandatory</p>
+      {backendError && <div className="error-dialog">{backendError}</div>}
         <button type="submit">Create</button>
       </form>
       </div>

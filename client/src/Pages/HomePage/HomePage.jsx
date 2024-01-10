@@ -11,6 +11,8 @@ function HomePage() {
   const [searchString, setSearchString]= useState ("");
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [foundDriver, setFoundDriver] = useState(null);
+  const [showCards, setShowCards] = useState(true);
 
   function handleChange (e){
     setSearchString (e.target.value);
@@ -21,7 +23,6 @@ function HomePage() {
     if (!searchString.trim()) {
       setError('Please enter a valid driver name.');
       return;
-      setSelectedTeam('')
     }
 
     dispatch (getByName (searchString)).then((response) => {
@@ -29,6 +30,7 @@ function HomePage() {
         setError('Please enter a VALID driver name or CREATE a new driver');
       } else {
         setError('');
+        setFoundDriver(response.payload);
       }
     });
   }
@@ -37,11 +39,25 @@ function HomePage() {
     setSearchString("");
   }
 
+  const clearError = () => {
+    setError('');
+  };
+
   useEffect(() => {
     dispatch(getDrivers());
     dispatch(getTeams());
+    handleOrderByChange({ target: { value: 'forename' } }); 
+    handleOrderDirectionChange({ target: { value: 'ASC' } });
     return clearDetail;
   }, [dispatch]);
+
+  useEffect(() => {
+    if (error && error === 'Please enter a VALID driver name or CREATE a new driver') {
+      setShowCards(false);
+    } else {
+      setShowCards(true);
+    }
+  }, [error]);
 
   const changePage = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -53,8 +69,8 @@ function HomePage() {
   const [selectedSource, setSelectedSource] = useState('');
   const [filteredDrivers, setFilteredDrivers] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
-  const [orderBy, setOrderBy] = useState('ASC');
-  const [orderDirection, setOrderDirection] = useState('forename', 'dob');
+  const [orderBy, setOrderBy] = useState('');
+  const [orderDirection, setOrderDirection] = useState('');
   
   const handleSourceFilter = (source) => {
 
@@ -111,10 +127,10 @@ function HomePage() {
 
 const handleOrderByChange = (e) => {
     setOrderBy(e.target.value);
-    if (e.target.value === 'forename') {
+    if (e.target.value === 'forename' || e.target.value === 'dob' || e.target.value === 'random') {
       setOrderDirection('ASC');
-    } else if (e.target.value === 'dob') {
-      setOrderDirection('newDate');
+    } else {
+      setOrderDirection('');
     }
   };
   const handleOrderDirectionChange = (e) => {
@@ -158,11 +174,17 @@ const handleOrderByChange = (e) => {
         }
         return 0;
       });
+    } else if (orderBy === 'random') {
+      sortedFilteredResults.sort(() => Math.random() - 0.5);
     }
   
     setFilteredDrivers(sortedFilteredResults);
   }, [selectedSource, selectedTeam, orderBy, orderDirection, allDrivers]);
 
+  useEffect(() => {
+    setOrderBy('random');
+  }, []);
+  
 return (
   <div className='home'>
     <div className="header-container">
@@ -183,7 +205,17 @@ return (
       <Navbar 
       searchString={searchString}
       handleChange={handleChange}
-      handleSubmit={handleSubmit}/>
+      handleSubmit={handleSubmit}
+      error={error}
+      setError={setError}
+      />
+      
+      {error && (
+        <div className="error-container">
+          <p className="message">{error}</p>
+          <button className="clear-error" onClick={clearError}>x</button>
+        </div>
+      )}
 
       <div className="filter-container">
         <div className="filter">
@@ -212,10 +244,10 @@ return (
           </select>
         </div>
 
-        
       <div className="filter">
       <p>Order by: </p>
         <select value={orderBy} onChange={handleOrderByChange}>
+          <option value="random">Random</option>
           <option value="forename">Name</option>
           <option value="dob">Birthday</option>
         </select>
@@ -237,14 +269,14 @@ return (
 
       </div>
 
-      {error && <p className="message">{error}</p>}
-
+      {showCards && (
       <Cards
-        allDrivers={allDrivers} 
+        allDrivers={foundDriver ? [foundDriver] : allDrivers}
         sortedFilteredDrivers={filteredDrivers}
-        currentPage={currentPage} 
+        currentPage={currentPage}
         changePage={changePage}
       />
+      )}
   </div>
   );
 }
